@@ -3,11 +3,15 @@
 import os
 from setuptools import setup, find_packages
 
-from misc import VERSION, PROJECT
+from guide import VERSION, PROJECT
 
 
 MODULE_NAME = 'django-guide'
-PACKAGE_DATA = list()
+PACKAGE_DATA = [
+    'locale/ru/LC_MESSAGES/django.mo',
+    'locale/ru/LC_MESSAGES/django.po',
+]
+
 
 def read( fname ):
     try:
