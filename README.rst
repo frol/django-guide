@@ -51,6 +51,7 @@ Templatetags
 ------------
 
 ::
+
     {% load guide_tags %}
 
     {% add_guide 'login' 'logout' ... %} {# this need for all guides you want show if GUIDE_SHOW_ONLY is True #}
