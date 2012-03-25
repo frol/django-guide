@@ -79,7 +79,7 @@ class Guide(models.Model):
         else:
             guide_images_url = settings.GUIDE_IMAGES_URL
         return GUIDE_JS_TEMPLATE % {
-            'id': self.id,
+            'id': self.pk,
             'html_selector': self.html_selector,
             'text': ("'%s'" % self.guide_text) if self.guide_text else 'null',
             'images_path': guide_images_url,
