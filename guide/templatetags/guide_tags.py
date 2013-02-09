@@ -1,21 +1,20 @@
-from django import template
 from django.db.models import F
+from django.template import Library, Node, Variable
 
 from guide import settings
 from guide.models import Guide, UserGuide
-from guide.settings import GUIDE_SHOW_ONLY_REGISTERED_GUIDES
 
 
-register = template.Library()
+register = Library()
 
 @register.tag
 def add_guide(parser, token):
     return AddGuide(token.split_contents()[1:])
 
 
-class AddGuide(template.Node):
+class AddGuide(Node):
     def __init__(self, names):
-        self.names = [template.Variable(name) for name in names]
+        self.names = [Variable(name) for name in names]
 
     def render(self, context):
         if not hasattr(context['request'], 'current_guide_name_list'):
@@ -36,7 +35,7 @@ def render_guides(context):
         guide_list = Guide.objects.exclude(visibility_mode=Guide.VM_FOR_ANONYMOUS)
     else:
         guide_list = Guide.objects.exclude(visibility_mode=Guide.VM_FOR_AUTHENTICATED)
-    if GUIDE_SHOW_ONLY_REGISTERED_GUIDES:
+    if settings.GUIDE_SHOW_ONLY_REGISTERED_GUIDES:
         guide_list = guide_list.filter(name__in=request.current_guide_name_list)
     else:
         guide_list = guide_list.all()
