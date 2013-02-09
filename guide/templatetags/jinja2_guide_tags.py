@@ -1,10 +1,10 @@
-try:
+from django.conf import settings
+
+if 'coffin' in settings.INSTALLED_APPS:
     from jinja2 import nodes, Markup
     from jinja2.ext import Extension
     from coffin.template import Library
-except ImportError:
-    pass
-else:
+    
     from guide.templatetags.guide_tags import AddGuide, render_guides as origin_render_guides
 
     register = Library()
