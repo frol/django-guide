@@ -21,15 +21,16 @@ if 'coffin' in settings.INSTALLED_APPS:
             args = []
             while not parser.stream.current.test('block_end'):
                 args.append(parser.parse_expression())
+                parser.stream.skip_if('comma')
             return nodes.Output([
                 self.call_method('_render', [nodes.Name('request', 'load'), nodes.List(args)]),
             ]).set_lineno(lineno)
 
         def _render(self, request, args):
             if not hasattr(request, 'current_guide_name_list'):
-                 request.current_guide_name_list = list()
+                request.current_guide_name_list = list()
             for name in args:
-                 request.current_guide_name_list.append(name)
+                request.current_guide_name_list.append(name)
             return ''
 
 
