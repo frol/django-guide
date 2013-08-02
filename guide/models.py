@@ -1,8 +1,10 @@
-from django.contrib.auth.models import User
+from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
-from guide import settings
+from guide import settings as local_settings
+
+AUTH_USER_MODEL = getattr(settings, 'AUTH_USER_MODEL', 'auth.User')
 
 GUIDE_JS_TEMPLATE = """$('%(html_selector)s').guide({text:%(text)s,
 imagesPath:'%(images_path)s',%(images_settings)s visible:%(visible)d,extra_id:%(id)d,
@@ -46,7 +48,7 @@ class Guide(models.Model):
         default=TM_ARROW_AND_CIRCLE)
     visibility_mode = models.PositiveSmallIntegerField(_("Visibility mode"),
         choices=VISIBILITY_MODE_CHOICES, default=VM_FOR_ALL)
-    who_saw = models.ManyToManyField(User, verbose_name=_("Who saw"), related_name='guide_list',
+    who_saw = models.ManyToManyField(AUTH_USER_MODEL, verbose_name=_("Who saw"), related_name='guide_list',
         help_text=_("Users whom already saw this guide"), blank=True, through='UserGuide')
 
     GUIDE_IMAGES_SETTINGS_TEMPLATES = {
@@ -69,15 +71,15 @@ class Guide(models.Model):
 
     def render(self, request=None, visible=True):
         images_settings = self.GUIDE_IMAGES_SETTINGS_TEMPLATES[self.tip_mode] % {
-                'arrow_image_name': settings.GUIDE_ARROW_IMAGE_NAME,
-                'highlight_image_name': settings.GUIDE_HIGHLIGHT_IMAGE_NAME,
+                'arrow_image_name': local_settings.GUIDE_ARROW_IMAGE_NAME,
+                'highlight_image_name': local_settings.GUIDE_HIGHLIGHT_IMAGE_NAME,
                 'vertical_position': self.str_vertical_position,
                 'horizontal_position': self.str_horizontal_position,
             }
-        if callable(settings.GUIDE_IMAGES_URL):
-            guide_images_url = settings.GUIDE_IMAGES_URL(request)
+        if callable(local_settings.GUIDE_IMAGES_URL):
+            guide_images_url = local_settings.GUIDE_IMAGES_URL(request)
         else:
-            guide_images_url = settings.GUIDE_IMAGES_URL
+            guide_images_url = local_settings.GUIDE_IMAGES_URL
         return GUIDE_JS_TEMPLATE % {
             'id': self.pk,
             'html_selector': self.html_selector,
@@ -91,6 +93,6 @@ class Guide(models.Model):
 
 
 class UserGuide(models.Model):
-    user = models.ForeignKey(User, related_name='saw_guide_list')
+    user = models.ForeignKey(AUTH_USER_MODEL, related_name='saw_guide_list')
     guide = models.ForeignKey(Guide, related_name='saw_user_list')
     views_count = models.PositiveSmallIntegerField(default=1)
