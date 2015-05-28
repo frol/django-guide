@@ -1,3 +1,5 @@
+..  image:: https://escalibro.com/media/uploads/escalibro_tips_preview.png
+
 django-guide
 ===========
 
